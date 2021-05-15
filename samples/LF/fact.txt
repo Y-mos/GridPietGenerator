@@ -1,0 +1,13 @@
+# calculate 10!=10x9x8x7x6x5x4x3x2x1=3,628,800
+push1 push2 push5 mul    #[1(->R),10(->C)
+:loop                    #[R,C
+dup                      #[R,C,C
+push3 push1 roll         #[C,R,C
+mul                      #[C,R*C(->R)
+push2 push1 roll         #[R,C
+push1 sub                #[R,C-1(->C)
+dup                      #[R,C,C
+if:loop:end              #[R,C
+:end                     #[R,C
+pop outn end             #[ ==>R
+

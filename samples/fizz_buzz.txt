@@ -1,0 +1,69 @@
+# --- iteration number ---
+inn                             #[M
+# --- counter ---
+push1                           #[M,1(->C)
+
+# --- check ---
+:check                          #[M,C
+dup dup push5 push3             #[M,C,C,C,5,3
+push3 push1 roll                #[M,C,C,3,C,5
+mod dup                         #[M,C,C,3,C%5,C%5
+push4 push2 roll                #[M,C,C%5,C%5,C,3
+mod dup                         #[M,C,C%5,C%5,C%3,C%3
+push4 push3 roll mul            #[M,C,C%5,C%3,((C%3)*(C%5)) (->F)
+push3 push1 roll                #[M,C,F,C%5,C%3
+# --- checkFizz ---
+:checkFizz                      #[M,C,F,C%5,C%3
+if:checkBuzz:                   #[M,C,F,C%5
+push1 not                       #[M,C,F,C%5 | 0(->DF)
+goto:Fi                         #[...|DF
+# --- checkBuzz ---
+:checkBuzz                      #[M,C,F,C%5
+if:showNumber:                  #[M,C,F
+push1                           #[M,C,F | 1(->DF)
+goto:Bu                         #[...|DF
+# --- showNumber if needed ---
+:showNumber                     #[M,C,F
+if::increment                   #[M,C
+dup                             #[M,C,C
+outn                            #[M,C ==>C
+goto:increment                  #[M,C
+
+# --- display Fi
+:Fi                             #[...|DF
+push5 push7 mul dup             #[...|DF,35,35
+push2 mul outc                  #[...|DF,35 ==>'F'
+push3 mul outc                  #[...|DF ==>'i'
+goto:zz                         #[...|DF
+# --- display Bu
+:Bu                             #[...|DF
+push3 push2 dup push5           #[...|DF,3,2,2,5
+mul push1 add mul mul outc      #[...|DF ==>'B'
+push3 dup dup dup push1 add     #[...|DF,3,3,3,4
+mul push1 add mul mul outc      #[...|DF ==>'u'
+goto:zz                         #[...|DF
+# --- display zz
+:zz                             #[...|DF
+push2 dup push1 add             #[...|DF,2,3
+dup push1 add                   #[...|DF,2,3,4
+dup push1 add                   #[...|DF,2,3,4,5
+mul mul push1 add mul           #[...|DF,2*(3*4*5+1)
+dup outc outc                   #[...|DF ==>'z','z'
+if:showNumber:checkBuzz         #[...|
+
+# --- increment ---
+:increment                      #[M,C
+push1 add                       #[M,C+1(->C)
+push4 dup push2 mul mul outc    #[M,C ==>' '
+
+# --- loop check ---
+:loopCheck                      #[M,C
+dup                             #[M,C,C
+push3 push2 roll                #[C,C,M
+dup                             #[C,C,M,M
+push4 push1 roll                #[M,C,C,M
+gt                              #[M,C,C>M
+if:end:check                    #[M,C
+
+:end
+end

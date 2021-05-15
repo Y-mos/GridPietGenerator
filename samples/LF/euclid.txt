@@ -1,0 +1,28 @@
+# Program that calculates the Great Common Divisor (GCD) of two numbers m and n
+push24 push18                    #[m(=24),n(=18)
+dup dup                          #[m,n,n,n
+push4 push3 roll                 #[n,n,n,m
+dup dup                          #[n,n,n,m,m,m
+push6 push1 roll                 #[m,n,n,n,m,m
+push4 push1 roll                 #[m,n,m,n,n,m
+gt if::loop                      #[m,n,m(->m'),n(->n')
+push2 push1 roll                 #[m,n,n(->m'),m(->n')
+
+:loop                            #[m,n,m',n'
+dup if::end                      #[m,n,m',n'
+dup                              #[m,n,m',n',n'
+push3 push1 roll                 #[m,n,n',m',n'
+mod                              #[m,n,n'(->m'),r(->n')
+goto:loop                        #[m,n,m',n'
+
+:end                             #[m,n,m',n'
+pop                              #[m,n,m'(->GCD)
+dup dup outn                     #[m,n,GCD,GCD
+push4 push8 mul outc             #[m,n,GCD,GCD
+push3 push1 roll                 #[m,GCD,n,GCD
+div push3 push1 roll             #[n/GCD(->N),m,GCD
+div push2 push1 roll             #[m/GCD(->M),N
+outn push4 push8 mul outc        #[M
+outn push4 push8 mul outc        #[
+end
+
