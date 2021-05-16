@@ -71,29 +71,26 @@ g++ -o GridPietInterpreter GridPietInterpreter.cpp
 + cmakeも使えます。
   + 要件：version >= 2.8
 
-### 実行ファイルの説明
-+ GridPietGenerator：処理フローテキストからPietソースコード画像(.ppm形式)を出力するジェネレータ。
 
-#### 使い方
-GridPietGenerator：処理フローファイルをPietソースコードに変換します。
+## 使い方
++ GridPietGenerator：処理フローファイルからPietソースコード画像(.ppm形式)を出力するジェネレータ。
+
 ```
 ./GridPietGenerator (処理フローファイル名)
 ```
 出力ファイル名は「処理フローファイル名+.ppm」です。
 
-#### 入力ファイルについて
-Pietにさせたい処理をテキストで記述したものです(「処理フローファイル」と呼ぶことにします)。
-
-##### 処理フローファイルの詳細
-準備中…
+#### 処理フローファイルについて
++ Pietにさせたい処理をテキストで記述したものです。
++ 詳細は[こちら](man/flowfile.md)。
 
 #### 出力画像ファイル
 現在、ppm形式での出力のみとなります（自力で実装できそうなのがこれだけだったため…）。
 
-#### 画像生成アルゴリズム
-準備中…
+## 画像生成アルゴリズム
+[こちら](man/algorithm.md)
 
-#### 出力されたPiet画像を実行するには
+## 出力されたPietコードの実行方法
 本プログラムにPietのインタプリタは含まれません。
 [こちら](https://www.dangermouse.net/esoteric/piet/tools.html)でPietのインタプリタが紹介されています。
 
