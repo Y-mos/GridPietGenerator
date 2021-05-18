@@ -16,10 +16,12 @@ private:
 	const size_t STACK_SIZE = 30000;	///	stack size
 	int* stack;	///	stack
 	int ptr;	///	position where the next value will be pushed
+	int ppc;		///	program counter
 	int pc;		///	program counter
 	int cnt;	///	number of operations
 	bool isRunning;	///	flag (program is running or not)
 	std::vector<std::string> cmds;	/// commands
+	std::vector<std::string> lines;	/// commands
 	std::stringstream output; ///	output
 
 
@@ -34,6 +36,8 @@ private:
 		ptr = 0;
 		isRunning = false;
 		cmds.clear();
+		lines.clear();
+		ppc = -1;
 		pc = 0;
 		cnt = 0;
 		output.str("");
@@ -53,7 +57,13 @@ private:
 		{
 			dst.cmds.push_back(*itr);
 		}
+		dst.lines.clear();
+		for (auto itr = lines.begin(); itr != lines.end(); itr++)
+		{
+			dst.lines.push_back(*itr);
+		}
 
+		dst.ppc = -1;
 		dst.pc = 0;
 		dst.cnt = 0;
 		dst.isRunning = false;
@@ -78,16 +88,18 @@ public:
 		}
 	}
 
-	size_t appendCommand(std::string cmd)
+	size_t appendCommand(std::string cmd, std::string line="")
 	{
 		isRunning = false;
 		cmds.push_back(cmd);
+		lines.push_back(line);
 		return cmds.size();
 	}
 	size_t clearCommands()
 	{
 		isRunning = false;
 		cmds.clear();
+		lines.clear();
 		return cmds.size();
 	}
 	bool step()
@@ -96,6 +108,7 @@ public:
 		{
 			isRunning = true;
 			ptr = 0;
+			ppc = -1;
 			pc = 0;
 			cnt = 0;
 			output.str("");
@@ -103,7 +116,7 @@ public:
 		}
 
 		std::string cmd = cmds[pc];
-
+		ppc = pc;
 		if (PietUtil::isLabel(cmd))
 		{
 			pc++;
@@ -340,13 +353,13 @@ public:
 		const int sslb = 16;	//	stack size between line breaks
 		ss << pad << "pc  :" << pc << std::endl;
 		ss << pad << "cnt :" << cnt << std::endl;
-		if (1 <= pc && pc <= cmds.size())
+		if (ppc>=0)
 		{
-			ss << pad << "cur : " << cmds[pc-1] << std::endl;
+			ss << pad << "cur : " << cmds[ppc] << ((lines[ppc] != "") ? (" @" + lines[ppc]) : ("")) << std::endl;
 		}
 		if (0 <= pc && pc < cmds.size())
 		{
-			ss << pad << "next: " << cmds[pc] << std::endl;
+			ss << pad << "next: " << cmds[pc] << ((lines[pc] != "") ? (" @" + lines[pc]) : ("")) << std::endl;
 		}
 		ss << pad << "stack: ";
 		for (int p = std::max(0, ptr - ss2d); p < ptr; p++)

@@ -14,14 +14,33 @@
 class PietUtil
 {
 public:
+	//	class for exception
+	class Warn_ParseText_UnknownElement 
+	{
+	public:
+		static bool& enabled()
+		{
+			static bool enabled = true;
+			return enabled;
+		}
+	};
+
 	static bool parseText(const char* text, std::vector<std::string>& cmds)
 	{
+		std::vector<std::string> lines;
+		return parseText(text, cmds, lines);
+	}
+	static bool parseText(const char* text, std::vector<std::string>& cmds, std::vector<std::string>& lines)
+	{
 		cmds.clear();
+		lines.clear();
 		int b = -1;
 		int e = -1;
-		const char delim[] = " \n";
+		const char delim[] = " \t\n";
 		bool isComment = false;
 
+		int row = 0;
+		int col = 0;
 		for (int i = 0; i < strlen(text) + 1; i++)
 		{
 			const char* tptr = text + i;
@@ -43,6 +62,7 @@ public:
 					char* tmp = new char[L + 1];
 					strncpy(tmp, text + b, L);
 					tmp[L] = '\0';
+					col++;
 
 					//	isComment?
 					if (tmp[0] == '#')
@@ -51,9 +71,19 @@ public:
 					}
 					if (!isComment)
 					{
+						std::string loc = "l." + std::to_string(row) + ";" + std::to_string(col);
 						if (PietUtil::isLabel(tmp) || PietUtil::isCommand(tmp))
 						{
 							cmds.push_back(tmp);
+							lines.push_back(loc);
+						}
+						else
+						{
+							if (Warn_ParseText_UnknownElement::enabled())
+							{
+								std::cerr << "Error:Unknown element @" << loc << ": " << tmp << std::endl;
+								throw Warn_ParseText_UnknownElement();
+							}
 						}
 					}
 
@@ -61,6 +91,8 @@ public:
 					if (isDelim >= delim + 1)
 					{
 						isComment = false;
+						row++;
+						col = 0;
 					}
 					//	initialize
 					b = -1;

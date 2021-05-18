@@ -31,15 +31,25 @@ int main(int argc, char** argv)
 	std::cerr << src << std::endl;
 
 	std::vector<std::string> cmds;
-	PietUtil::parseText(src.c_str(), cmds);
-	for (std::string c : cmds) { std::cerr << c << std::endl; }
+	std::vector<std::string> lines;
+	PietUtil::parseText(src.c_str(), cmds, lines);
+	for (size_t i = 0; i < cmds.size(); i++)
+	{
+		std::cerr << lines[i] << " | " << cmds[i] << std::endl;
+	}
 	
 	if(argc==2)
 	{
 		PietInterpreter pi;
+		/*
 		for (auto itr = cmds.begin(); itr != cmds.end(); itr++)
 		{
 			pi.appendCommand(*itr);
+		}
+		*/
+		for (size_t i = 0; i < cmds.size(); i++)
+		{
+			pi.appendCommand(cmds[i], lines[i]);
 		}
 		
 		std::cerr << pi.str_commands() << std::endl;
