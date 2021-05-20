@@ -319,7 +319,6 @@ public:
 					{
 						char v = static_cast<char>(stack[ptr - 1]);
 						ptr--;
-						std::cout << v;
 						output << v;
 					}
 				}
@@ -329,7 +328,6 @@ public:
 					{
 						int v = stack[ptr - 1];
 						ptr--;
-						std::cout << v;
 						output << v;
 					}
 				}
@@ -351,15 +349,15 @@ public:
 		ss << pad << "===PietInterpreter [" << static_cast<const void*>(this) << "]" << std::endl;
 		const int ss2d = 32;	//	stack size to display 
 		const int sslb = 16;	//	stack size between line breaks
-		ss << pad << "pc  :" << pc << std::endl;
 		ss << pad << "cnt :" << cnt << std::endl;
+		ss << pad << "pc  :" << pc << std::endl;
 		if (ppc>=0)
 		{
-			ss << pad << "cur : " << cmds[ppc] << ((lines[ppc] != "") ? (" @" + lines[ppc]) : ("")) << std::endl;
+			ss << pad << "cur : " << cmds[ppc] << ((lines[ppc] != "") ? (" @ l." + lines[ppc]) : ("")) << std::endl;
 		}
 		if (0 <= pc && pc < cmds.size())
 		{
-			ss << pad << "next: " << cmds[pc] << ((lines[pc] != "") ? (" @" + lines[pc]) : ("")) << std::endl;
+			ss << pad << "next: " << cmds[pc] << ((lines[pc] != "") ? (" @ l." + lines[pc]) : ("")) << std::endl;
 		}
 		ss << pad << "stack: ";
 		for (int p = std::max(0, ptr - ss2d); p < ptr; p++)
@@ -376,10 +374,10 @@ public:
 	std::string str_commands(std::string pad = "") const
 	{
 		std::stringstream ss;
-		ss << pad << "===PietInterpreter [" << static_cast<const void*>(this) << "]" << std::endl;
+		ss << pad << "===PietInterpreter - Commands [" << static_cast<const void*>(this) << "] " << std::endl;
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
-			ss << pad << cmds[i] << std::endl;
+			ss << pad << lines[i] << " | " << cmds[i] << std::endl;
 		}
 		return ss.str();
 	}

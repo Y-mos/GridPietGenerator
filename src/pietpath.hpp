@@ -50,8 +50,8 @@ public:
 	std::string str(std::string pad = "") const
 	{
 		std::stringstream ss;
-		ss << pad << "===PietPath [" << static_cast<const void*>(this) << "] (" << name << ")==>(" << to << ") (pos, dir)=("
-			<< pos << "," << dir2str(dir) << ")===" << std::endl;
+		ss << pad << "*PATH [" << static_cast<const void*>(this) << "] (" << name << ")==>(" << to << ") (pos, dir)=("
+			<< pos << "," << dir2str(dir) << ")";
 
 		return ss.str();
 	}

@@ -27,15 +27,14 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	std::string src((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+	std::cerr << "=== Contents of Flow Description File (" << ifname << ") ===" << std::endl;
 	std::cerr << src << std::endl;
+	std::cerr << "=== /Contents of Flow Description File (" << ifname << ") ===" << std::endl;
+	std::cerr << std::endl;
 
 	std::vector<std::string> cmds;
 	std::vector<std::string> lines;
 	PietUtil::parseText(src.c_str(), cmds, lines);
-	for (size_t i = 0; i < cmds.size(); i++)
-	{
-		std::cerr << lines[i] << " | " << cmds[i] << std::endl;
-	}
 
 	PietInterpreter pi;
 	for (size_t i = 0; i < cmds.size(); i++)
@@ -44,6 +43,7 @@ int main(int argc, char** argv)
 	}
 
 	std::cerr << pi.str_commands() << std::endl;
+	std::cerr << std::endl;
 	
 	while (pi.step())
 	{

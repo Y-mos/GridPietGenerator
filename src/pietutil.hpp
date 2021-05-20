@@ -71,7 +71,7 @@ public:
 					}
 					if (!isComment)
 					{
-						std::string loc = "l." + std::to_string(row) + ";" + std::to_string(col);
+						std::string loc = std::to_string(row) + "-" + std::to_string(col);
 						if (PietUtil::isLabel(tmp) || PietUtil::isCommand(tmp))
 						{
 							cmds.push_back(tmp);

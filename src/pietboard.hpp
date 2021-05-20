@@ -421,7 +421,7 @@ public:
 	std::string str(std::string pad = "") const
 	{
 		std::stringstream ss;
-		ss << pad << "*PietBoard [" << static_cast<const void*>(this) << std::endl;
+		ss << pad << "===PietBoard [" << static_cast<const void*>(this) << "]" << std::endl;
 		ss << pad << " - lastID = " << lastID << std::endl;
 		for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
 		{

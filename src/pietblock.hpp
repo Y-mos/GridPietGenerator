@@ -375,10 +375,9 @@ public:
 		ss << pad << "  [" << getW() << "," << getH() << "] @ (pos,dir)=(" << pos << ", " << dir << ") user[" << w << "," << h << "]/sys[" << ws << "," << hs << "]/buf[" << bufIn << "," << bufOut << "]";
 		if (outT != "") { ss << " outT=" << outT; }
 		if (outF != "") { ss << " outF=" << outF; }
-		ss << std::endl;
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
-			ss << pad << " " << std::setw(5) << std::setfill(' ') << i << " | " << cmds[i] << std::endl;
+			ss << std::endl << pad << " " << std::setw(5) << std::setfill(' ') << i << " | " << cmds[i];
 		}
 
 		return ss.str();

@@ -26,15 +26,22 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	std::string src((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+	std::cerr << "=== Contents of Flow Description File (" << ifname << ") ===" << std::endl;
 	std::cerr << src << std::endl;
+	std::cerr << "=== /Contents of Flow Description File (" << ifname << ") ===" << std::endl;
+	std::cerr << std::endl;
 
 	std::vector<std::string> cmds;
 	std::vector<std::string> lines;
 	PietUtil::parseText(src.c_str(), cmds, lines);
+
+	std::cerr << "=== Commands ===" << std::endl;
 	for (size_t i = 0; i < cmds.size(); i++)
 	{
 		std::cerr << lines[i] << " | " << cmds[i] << std::endl;
 	}
+	std::cerr << "=== /Commands ===" << std::endl;
+	std::cerr << std::endl;
 
 	std::string ofname=((argc==2)?(std::string(argv[1])+".ppm"):(argv[2]));
 	
@@ -46,7 +53,10 @@ int main(int argc, char** argv)
 
 	pb.put();
 	std::cerr << pb.str() << std::endl;
+	std::cerr << std::endl;
 
+
+	std::cerr << "=== Output layout in ASCII ===" << std::endl;
 	int W = 0;
 	int H = 0;
 	char* data = nullptr;
@@ -59,6 +69,8 @@ int main(int argc, char** argv)
 		std::cerr << line << std::endl;
 	}
 	delete[] line;
+	std::cerr << "=== /Output layout in ASCII ===" << std::endl;
+	std::cerr << std::endl;
 
 	unsigned char* img = nullptr;
 	pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor);
