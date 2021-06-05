@@ -184,7 +184,7 @@ public:
 			);
 	}
 public:
-	static const char* getPietColor_ascii(int h, int b)
+	static const char* getPietColor_ascii(int h, int b, const void* _ = nullptr)
 	{
 		static char colors[][3]
 			= {
@@ -202,7 +202,7 @@ public:
 		else if (h < 0 || b < 0) { return &white; }
 		return &(colors[h % 6][b % 3]);
 	}
-	static const unsigned char* getPietColor(int h, int b)
+	static const unsigned char* getPietColor(int h, int b, const void* _ = nullptr)
 	{
 		static unsigned char colors[][3][3]
 			= {
@@ -220,7 +220,7 @@ public:
 		else if (h < 0 || b < 0) { return white; }
 		return colors[h % 6][b % 3];
 	}
-	static bool getNextPietColor(std::string cmd, int& h, int&b, bool inverse = false)
+	static bool getNextPietColor(std::string cmd, int& h, int& b, bool inverse = false)
 	{
 		static std::string commands[][3]
 			= {
@@ -266,6 +266,26 @@ public:
 		{
 			dst[c] = col[c];
 		}
+	}
+	template <typename T>
+	static bool isColor(const T* dst, const T* col, int C)
+	{
+		bool ret = true;
+		for (int c = 0; c < C; c++)
+		{
+			ret &= (dst[c] == col[c]);
+		}
+		return ret;
+	}
+	template <typename T>
+	static bool isColor(const T* dst, T col, int C)
+	{
+		bool ret = true;
+		for (int c = 0; c < C; c++)
+		{
+			ret &= (dst[c] == col);
+		}
+		return ret;
 	}
 public:
 	static bool getPushCommandSize(int val, int& w, int& h)

@@ -58,7 +58,7 @@ public:
 		return ss.str();
 	}
 	template <typename T>
-	void draw(T* data, int W, int H, int C, int _x0, int _y0, T blank, const T* (*getPietColor)(int h, int b)) const
+	void draw(T* data, int W, int H, int C, int _x0, int _y0, T blank, const T* (*getPietColor)(int h, int b, const void*)) const
 	{
 		bool isRightTurn;
 		switch ((dirAfter + 4 - dirBefore) % 4)
@@ -87,11 +87,11 @@ public:
 
 		int h = 0; int b = 0;
 		//	joint
-		col = getPietColor(h, b);
+		col = getPietColor(h, b, nullptr);
 		PietUtil::setColor(ptr, col, C);
 		if (isRightTurn)
 		{
-			col = getPietColor(-1, -1);
+			col = getPietColor(-1, -1, nullptr);
 			PietUtil::setColor(ptr + dx, col, C);
 		}
 		else
@@ -99,7 +99,7 @@ public:
 			PietUtil::setColor(ptr + dx + dy, col, C);
 			PietUtil::setColor(ptr + dx, col, C);
 			PietUtil::setColor(ptr + dx - dy, col, C);
-			col = getPietColor(-1, -1);
+			col = getPietColor(-1, -1, nullptr);
 			PietUtil::setColor(ptr + dx - 2 * dy, col, C);
 			PietUtil::setColor(ptr + dx + 2 * dy, col, C);
 			PietUtil::setColor(ptr - dy + 2 * dx, col, C);

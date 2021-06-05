@@ -382,8 +382,36 @@ public:
 
 		return ss.str();
 	}
+
+	static const char* getPietBlockHash(int, int, const void* ptr)
+	{
+		static char c = '\0';
+		if (ptr == nullptr)
+		{
+			c = '%';
+		}
+		else
+		{
+			const PietBlock* pb = reinterpret_cast<const PietBlock*>(ptr);
+			c = pb->hash;
+		}
+		return &c;
+	}
+
+	void convertLocal2World(int& X, int& Y, int x, int y, int W, int H, int x0, int y0) const
+	{
+		switch (dir)
+		{
+		case 0: { X = W - y - 1; Y = y0 + pos + x; break; }
+		case 1: { Y = H - y - 1; X = x0 + pos + x; break; }
+		case 2: { X = y; Y = y0 + pos + x; break; }
+		case 3: { Y = y; X = x0 + pos + x; break; }
+		}
+		return;
+	}
+
 	template <typename T>
-	void draw(T* data, int W, int H, int C, int _x0, int _y0, T blank, const T* (*getPietColor)(int h, int b)) const
+	void draw(T* data, int W, int H, int C, int _x0, int _y0, T blank, const T* (*getPietColor)(int h, int b, const void*)) const
 	{
 		size_t ori = 0;
 		int dx = 0;
@@ -402,21 +430,21 @@ public:
 
 		int h = 0; int b = 0;
 		//	header
-		col = getPietColor(-1, -1);
+		col = getPietColor(-1, -1, this);
 		PietUtil::setColor(ptr + dy, col, C);
 		PietUtil::setColor(ptr + dy + 4 * dx, col, C);
 		if (dir == 0 || dir == 3)
 		{
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 			PietUtil::setColor(ptr + dy * 2 + dx * 2, col, C);
 
 			PietUtil::getNextPietColor("push",h,b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 			PietUtil::setColor(ptr + dy * 1 + dx * 2, col, C);
 			PietUtil::setColor(ptr + dy * 1 + dx * 1, col, C);
 
 			PietUtil::getNextPietColor("ptr", h, b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 			PietUtil::setColor(ptr + dx * 1, col, C);
 			PietUtil::setColor(ptr + dx * 2, col, C);
 			PietUtil::setColor(ptr + dx * 3, col, C);
@@ -424,20 +452,20 @@ public:
 		}
 		else
 		{
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 
 			PietUtil::setColor(ptr + dy * 2, col, C);
 			PietUtil::setColor(ptr + dy * 2 + dx * 1, col, C);
 			PietUtil::setColor(ptr + dy * 2 + dx * 2, col, C);
 			PietUtil::getNextPietColor("push", h, b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 
 			PietUtil::setColor(ptr + dy * 1 + dx * 2, col, C);
 			PietUtil::setColor(ptr + dy * 1 + dx * 1, col, C);
 			PietUtil::getNextPietColor("ptr", h, b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 
-			//PietUtil::setColor(ptr, col, C);	//	Ç¢ÇÁÇ»Ç¢Ç∆évÇ§Ç™ÅcÅB
+			//PietUtil::setColor(ptr, col, C);	//	I think it's not required...
 			PietUtil::setColor(ptr + dx * 1, col, C);
 			PietUtil::setColor(ptr + dx * 2, col, C);
 			PietUtil::setColor(ptr + dx * 3, col, C);
@@ -445,7 +473,7 @@ public:
 		}
 		//	user
 		h = 0; b = 0;
-		col = getPietColor(h, b);
+		col = getPietColor(h, b, this);
 		int x = 5 + bufIn;
 		bool isEnded = false;
 		int arg=0;
@@ -460,11 +488,11 @@ public:
 					PietUtil::setColor(ptr + dx * x + dy * 1, col, C);
 					PietUtil::setColor(ptr + dx * x + dy * 2, col, C);
 					PietUtil::getNextPietColor("push", h, b);
-					col = getPietColor(h, b);
+					col = getPietColor(h, b, this);
 
 					PietUtil::setColor(ptr + dx * (x + 1), col, C);
 					PietUtil::getNextPietColor("ptr", h, b);
-					col = getPietColor(h, b);
+					col = getPietColor(h, b, this);
 
 					PietUtil::setColor(ptr + dx * (x + 2), col, C);
 				}
@@ -473,7 +501,7 @@ public:
 				PietUtil::setColor(ptr + dx * (x + 3) + dy * 2, col, C);
 				PietUtil::setColor(ptr + dx * (x + 3) + dy * 1, col, C);
 
-				col = getPietColor(-1, -1);
+				col = getPietColor(-1, -1, this);
 				PietUtil::setColor(ptr + dx * (x + 1) + dy * 2, col, C);
 				PietUtil::setColor(ptr + dx * (x + 2) + dy * 3, col, C);
 				PietUtil::setColor(ptr + dx * (x + 3) + dy * 3, col, C);
@@ -491,11 +519,11 @@ public:
 			{
 				PietUtil::setColor(ptr + dx * x, col, C);
 				PietUtil::getNextPietColor("not", h, b);
-				col = getPietColor(h, b);
+				col = getPietColor(h, b, this);
 
 				PietUtil::setColor(ptr + dx * (x + 1), col, C);
 				PietUtil::getNextPietColor("swt", h, b);
-				col = getPietColor(h, b);
+				col = getPietColor(h, b, this);
 
 
 				PietUtil::setColor(ptr + dx * (x + 2), col, C);
@@ -505,12 +533,12 @@ public:
 				if (dir == 1 || dir == 2)
 				{
 					PietUtil::getNextPietColor("push", h, b);
-					col = getPietColor(h, b);
+					col = getPietColor(h, b, this);
 
 					PietUtil::setColor(ptr + dx * (x + 3), col, C);
 					PietUtil::setColor(ptr + dx * (x + 3) + dy * 2, col, C);
 					PietUtil::getNextPietColor("ptr", h, b);
-					col = getPietColor(h, b);
+					col = getPietColor(h, b, this);
 				}
 				PietUtil::setColor(ptr + dx * (x + 4) + dy * 2, col, C);
 
@@ -518,7 +546,7 @@ public:
 				if (dir == 1 || dir == 2)
 				{
 					PietUtil::getNextPietColor("ptr", h, b, true);
-					col = getPietColor(h, b);
+					col = getPietColor(h, b, this);
 
 					PietUtil::setColor(ptr + dx * (x + 8 + bufOut), col, C);
 
@@ -526,7 +554,7 @@ public:
 
 				if (dir == 0 || dir == 3)
 				{
-					col = getPietColor(-1, -1);
+					col = getPietColor(-1, -1, this);
 					PietUtil::setColor(ptr + dx * (x + 10 + bufOut), col, C);
 					PietUtil::setColor(ptr + dx * (x + 5) + dy * 2, col, C);
 				}
@@ -550,14 +578,14 @@ public:
 				}
 				x += ww;
 				PietUtil::getNextPietColor("push", h, b);
-				col = getPietColor(h, b);
+				col = getPietColor(h, b, this);
 			}
 			else if (PietUtil::isCommand(cmd))
 			{
 				PietUtil::setColor(ptr + dx * x, col, C);
 				x += 1;
 				PietUtil::getNextPietColor(cmd, h, b);
-				col = getPietColor(h, b);
+				col = getPietColor(h, b, this);
 			}
 		}
 		if (!isEnded)
@@ -569,11 +597,11 @@ public:
 				PietUtil::setColor(ptr + dx * x + dy * 2, col, C);
 			}
 			PietUtil::getNextPietColor("push", h, b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 
 			PietUtil::setColor(ptr + dx * (x + 1), col, C);
 			PietUtil::getNextPietColor("ptr", h, b);
-			col = getPietColor(h, b);
+			col = getPietColor(h, b, this);
 
 			PietUtil::setColor(ptr + dx * (x + 2), col, C);
 		}

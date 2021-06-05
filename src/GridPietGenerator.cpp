@@ -60,7 +60,8 @@ int main(int argc, char** argv)
 	int W = 0;
 	int H = 0;
 	char* data = nullptr;
-	pb.draw<char,1,'.'>(data,W,H,PietUtil::getPietColor_ascii);
+	//pb.draw<char, 1, '.'>(data, W, H, PietUtil::getPietColor_ascii);
+	pb.draw<char, 1, '.'>(data, W, H, PietBlock::getPietBlockHash,PietPath::getPathColor_ascii);
 	char* line = new char[W + 1];
 	for (int y = 0; y < H; y++)
 	{
@@ -69,10 +70,12 @@ int main(int argc, char** argv)
 		std::cerr << line << std::endl;
 	}
 	delete[] line;
+	delete[] data;
 	std::cerr << "=== /Output layout in ASCII ===" << std::endl;
 	std::cerr << std::endl;
 
 	unsigned char* img = nullptr;
+	//pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor, PietPath::getPathColor);
 	pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor);
 	PietUtil::export_ppm(ofname.c_str(), img, W, H);
 	delete[] img;

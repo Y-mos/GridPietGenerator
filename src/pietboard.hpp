@@ -440,7 +440,7 @@ public:
 
 
 	template <typename T, int C, T BLANK>
-	void draw(T*& data, int& W, int& H, const T* (*getPietColor)(int h, int b)) const
+	void draw(T*& data, int& W, int& H, const T* (*getPietColor)(int h, int b, const void* obj), const T* (*getPathColor)(int dir, const void* obj) = nullptr) const
 	{
 		W = heights[2] + pathSize[0] + heights[0];
 		H = heights[3] + pathSize[1] + heights[1];
@@ -455,6 +455,117 @@ public:
 		{
 			itr->draw(data, W, H, C, heights[2], heights[3], BLANK, getPietColor);
 		}
+
+		if (getPathColor != nullptr)
+		{
+			for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
+			{
+				if (itr->first == ":0") { continue; }
+				const PietBlock& src = itr->second;
+				std::string name = src.getName();
+				std::string outT = src.getOutT();
+				std::string outF = src.getOutF();
+
+				std::string outputSuffix[2] = { "/T>","/F>" };
+				std::string(PietBlock::*arrGetOut[2])() const = { &PietBlock::getOutT,&PietBlock::getOutF };
+				int(PietBlock::*arrGetOutPos[2])() const = { &PietBlock::getOutTPos,&PietBlock::getOutFPos };
+
+				for (int i = 0; i < 2; i++)
+				{
+					std::string toName = name + outputSuffix[i];
+					if (paths.find(toName) != paths.end())
+					{
+						int poses[4] = { -1,-1,-1,-1 };
+						int dirs[4] = { -1,-1,-1,-1 };
+						for (int k = 0; k < 3; k++)
+						{
+							const PietPath& pp = paths.at(toName);
+							dirs[k] = pp.getDir();
+							poses[k] = pp.getPos() + ((dirs[k] == 0 || dirs[k] == 2) ? heights[3] : heights[2]);
+							toName = pp.getTo();
+							if (toName == "") { break; }
+						}
+
+						std::string dstname = (src.*arrGetOut[i])();
+						const PietBlock& dst = blocks.at(dstname);
+						int srcP[2] = { -1,-1 };
+						int dstP[2] = { -1,-1 };
+
+						src.convertLocal2World(srcP[0], srcP[1], (src.*arrGetOutPos[i])() - src.getPos(), (i==0?0:2), W, H, heights[2], heights[3]);
+						dst.convertLocal2World(dstP[0], dstP[1], dst.getInPos() - dst.getPos(), 2, W, H, heights[2], heights[3]);
+
+						//
+						//std::cerr << " + " << toName << " ==> " << dstname << std::endl;
+						//std::cerr << "  [" << srcP[0] << ", " << srcP[1] << "]" << std::endl;
+						//
+						int p1[2];
+						int p2[2];
+						p1[0] = srcP[0]; p1[1] = srcP[1];
+						p2[0] = srcP[0]; p2[1] = srcP[1];
+						for (int k = 0; k < 3; k++)
+						{
+							if (poses[k] < 0) { break; }
+							T* ptr = data + (p1[1] * W + p1[0])*C;
+							int dptr;
+							switch (dirs[k])
+							{
+							case 0: { dptr = C; break; }
+							case 1: { dptr = W * C; break; }
+							case 2: { dptr = -C; break; }
+							case 3: { dptr = -W * C; break; }
+							}
+							int changingIndex = dirs[k] % 2;
+							p2[changingIndex] = ((poses[k + 1] == -1) ? dstP[changingIndex] : poses[k + 1]);
+
+							int B = std::min(p1[changingIndex], p2[changingIndex]);
+							int E = std::max(p1[changingIndex], p2[changingIndex]);
+
+							for (int i = B; i <= E; i++)
+							{
+								const T* col = getPathColor(dirs[k], nullptr);
+								if (PietUtil::isColor(ptr, BLANK, C))
+								{
+									PietUtil::setColor(ptr, col, C);
+
+								}
+								else if (
+									PietUtil::isColor(ptr, getPathColor(0, nullptr), C) ||
+									PietUtil::isColor(ptr, getPathColor(2, nullptr), C)
+									)
+								{
+									if (dirs[k] == 1 || dirs[k] == 3)
+									{
+										PietUtil::setColor(ptr, getPathColor(4, nullptr), C);
+									}
+								}
+								else if (
+									PietUtil::isColor(ptr, getPathColor(1, nullptr), C) ||
+									PietUtil::isColor(ptr, getPathColor(3, nullptr), C)
+									)
+								{
+									if (dirs[k] == 0 || dirs[k] == 2)
+									{
+										PietUtil::setColor(ptr, getPathColor(4, nullptr), C);
+									}
+								}
+								ptr += dptr;
+							}
+
+							p1[0] = p2[0]; p1[1] = p2[1];
+							//
+							//std::cerr << "    - " << poses[k] << " (" << dirs[k] << ")" << std::endl;
+							//
+						}
+						//
+						//std::cerr << "  [" << dstP[0] << ", " << dstP[1] << "]" << std::endl;
+						//
+					}
+
+				}
+
+			}
+		}
+		return;
 	}
 
 
