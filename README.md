@@ -124,6 +124,7 @@ end
   + そのため、インタプリタの動きをトレースすると、画像中央に格子状の軌跡が現れます。
 
 将来的にPietコードを任意の画像に埋め込むたいと考え、このような特徴を持つよう設計しました。
++ （追記）そして作りました：[PietEmbedder](https://github.com/Y-mos/PietEmbedder)
 
 ## ビルド
 ### 要件
@@ -139,8 +140,8 @@ g++ -o GridPietInterpreter GridPietInterpreter.cpp
 + cmakeも使えます。
   + 要件：version >= 2.8
 ```
-git clone (repository's URL)
-cd GridPiet
+git clone https://github.com/Y-mos/GridPietGenerator.git
+cd GridPietGenerator
 mkdir build
 cd build
 cmake ..
