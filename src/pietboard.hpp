@@ -565,6 +565,19 @@ public:
 
 			}
 		}
+		if (true)
+		{
+			const T* col = getPietColor(-1, 1, nullptr);
+			T* ptr = data;
+			for (int x = 0; x < W; x++)
+			{
+				if (!PietUtil::isColor(ptr, BLANK, C)) { break; }
+				
+				PietUtil::setColor(ptr, col, C);
+				ptr += C;
+			}
+
+		}
 		return;
 	}
 

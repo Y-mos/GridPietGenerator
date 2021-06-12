@@ -12,9 +12,10 @@
 
 int main(int argc, char** argv)
 {
-	if(argc < 1)
+	if(argc < 2)
 	{
 		std::cerr << "Usage : " << argv[0] << " [inputFileName] <outputFileName>" << std::endl;
+		std::cerr << "        " << argv[0] << " [inputFileName] <outputFileName> <outputPietDesignFileName>" << std::endl;
 		return 0;
 	}
 	std::string ifname=argv[1];
@@ -57,28 +58,61 @@ int main(int argc, char** argv)
 
 
 	std::cerr << "=== Output layout in ASCII ===" << std::endl;
-	int W = 0;
-	int H = 0;
-	char* data = nullptr;
-	//pb.draw<char, 1, '.'>(data, W, H, PietUtil::getPietColor_ascii);
-	pb.draw<char, 1, '.'>(data, W, H, PietBlock::getPietBlockHash,PietPath::getPathColor_ascii);
-	char* line = new char[W + 1];
-	for (int y = 0; y < H; y++)
 	{
-		strncpy(line, data + y * W, W);
-		line[W] = '\0';
-		std::cerr << line << std::endl;
+		int W = 0;
+		int H = 0;
+		char* data = nullptr;
+		//pb.draw<char, 1, '.'>(data, W, H, PietUtil::getPietColor_ascii);
+		pb.draw<char, 1, '.'>(data, W, H, PietBlock::getPietBlockHash, PietPath::getPathColor_ascii);
+		char* line = new char[W + 1];
+		for (int y = 0; y < H; y++)
+		{
+			strncpy(line, data + y * W, W);
+			line[W] = '\0';
+			std::cerr << line << std::endl;
+		}
+		delete[] line;
+		delete[] data;
 	}
-	delete[] line;
-	delete[] data;
 	std::cerr << "=== /Output layout in ASCII ===" << std::endl;
 	std::cerr << std::endl;
 
-	unsigned char* img = nullptr;
-	//pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor, PietPath::getPathColor);
-	pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor);
-	PietUtil::export_ppm(ofname.c_str(), img, W, H);
-	delete[] img;
-	
+	if (argc > 3)
+	{
+		std::cerr << "=== Output text ===" << std::endl;
+		int W = 0;
+		int H = 0;
+		char* data = nullptr;
+		pb.draw<char, 1, '.'>(data, W, H, PietUtil::getPietColor_ascii, PietPath::getPathColor_ascii);
+		char* line = new char[W + 1];
+		std::ofstream ofs(argv[3]);
+		if (ofs.is_open())
+		{
+			ofs << "PIET TEXT DESCRIPTION" << std::endl;
+			ofs << W << "," << H << std::endl;
+			for (int y = 0; y < H; y++)
+			{
+				strncpy(line, data + y * W, W);
+				line[W] = '\0';
+				ofs << line << std::endl;
+			}
+		}
+		delete[] line;
+		delete[] data;
+		std::cerr << "=== /Output text ===" << std::endl;
+		std::cerr << std::endl;
+	}
+
+
+	{
+		int W = 0;
+		int H = 0;
+		unsigned char* img = nullptr;
+		//pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor, PietPath::getPathColor);
+		pb.draw<unsigned char, 3, 255>(img, W, H, PietUtil::getPietColor);
+		PietUtil::export_ppm(ofname.c_str(), img, W, H);
+		delete[] img;
+	}
+
 	return 0;
 }

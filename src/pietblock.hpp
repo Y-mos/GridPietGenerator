@@ -471,6 +471,14 @@ public:
 			PietUtil::setColor(ptr + dx * 3, col, C);
 			PietUtil::setColor(ptr + dy * 1 + dx * 3, col, C);
 		}
+		//	path from header to user
+		{
+			col = getPietColor(-1, 1, nullptr);
+			for (int x = 4; x < 5 + bufIn; x++)
+			{
+				PietUtil::setColor(ptr + dx * x, col, C);
+			}
+		}
 		//	user
 		h = 0; b = 0;
 		col = getPietColor(h, b, this);
@@ -508,6 +516,16 @@ public:
 				PietUtil::setColor(ptr + dx * (x + 4) + dy * 2, col, C);
 				PietUtil::setColor(ptr + dx * (x + 4) + dy * 1, col, C);
 				PietUtil::setColor(ptr + dx * (x + 3), col, C);
+
+				// path inside block
+				col = getPietColor(-1, 1, nullptr);
+				PietUtil::setColor(ptr + dx * (x + 2) + dy * 1, col, C);
+				if (dir == 3 || dir == 0)
+				{
+					PietUtil::setColor(ptr + dx * (x + 1), col, C);
+					PietUtil::setColor(ptr + dx * (x + 2), col, C);
+				}
+
 				isEnded = true;
 				break;
 			}
@@ -558,6 +576,20 @@ public:
 					PietUtil::setColor(ptr + dx * (x + 10 + bufOut), col, C);
 					PietUtil::setColor(ptr + dx * (x + 5) + dy * 2, col, C);
 				}
+
+				// path inside block
+				col = getPietColor(-1, 1, nullptr);
+				if (dir == 0 || dir == 3)
+				{
+					PietUtil::setColor(ptr + dx * (x + 8 + bufOut), col, C);
+					PietUtil::setColor(ptr + dx * (x + 3), col, C);
+					PietUtil::setColor(ptr + dx * (x + 3) + dy * 2, col, C);
+				}
+				for (int xx = x + 4; xx < x + 8 + bufOut; xx++)
+				{
+					PietUtil::setColor(ptr + dx * xx, col, C);
+				}
+
 				isEnded = true;
 				break;
 			}
