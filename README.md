@@ -408,7 +408,7 @@ BSD 3-Clause License ([LISENCE](LICENSE))参照
 ## 問合せ / Contact
 Y-mos
 
-E-mail:ymos.36e17a7047@gmail.com
+twitter:[Y-mos](https://twitter.com/ymos3327)
 
 
 
