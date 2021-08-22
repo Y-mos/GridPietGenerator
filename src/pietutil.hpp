@@ -52,6 +52,16 @@ public:
 					b = i;
 					e = i;
 				}
+				else
+				{
+					//	Comment region ended?
+					if (isDelim >= delim + 1)
+					{
+						isComment = false;
+						row++;
+						col = 0;
+					}
+				}
 			}
 			else
 			{
@@ -103,11 +113,25 @@ public:
 		}
 		return true;
 	}
+private:
+	static bool isLabelName(std::string word)
+	{
+		bool ret = true;
+		for (size_t i = 1; i < word.length(); i++)
+		{
+			const char& c = word[i];
+			ret &= (isalnum(c) || (c == '_'));
+			if (!ret) { break; }
+		}
+		return ret;
+	}
+public:
 	static bool isLabel(std::string word)
 	{
 		if (word[0] != ':') { return false; }
 		if (isdigit(word[1])) { return false; }
-		if (!std::all_of(word.cbegin() + 1, word.cend(), [](char c) {return (isalnum(c) || (c == '_')); })) { return false; }
+		//if (!std::all_of(word.cbegin() + 1, word.cend(), [](char c) {return (isalnum(c) || (c == '_')); })) { return false; }
+		if (!PietUtil::isLabelName(word)) { return false; }
 
 		return true;
 	}
