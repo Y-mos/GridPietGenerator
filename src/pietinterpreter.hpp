@@ -297,9 +297,9 @@ public:
 					{
 						throw Err_StackOverflow();
 					}
-					char v;
-					std::cin >> v;
-					stack[ptr] = static_cast<int>(v);
+					char v[2];
+					std::cin.get(v,2);
+					stack[ptr] = static_cast<int>(v[0]);
 					ptr++;
 				}
 				else if (cmd == "inn")
