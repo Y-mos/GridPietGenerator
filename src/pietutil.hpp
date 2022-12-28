@@ -55,7 +55,7 @@ public:
 				else
 				{
 					//	Comment region ended?
-					if (isDelim >= delim + 1)
+					if (isDelim >= delim + 2)
 					{
 						isComment = false;
 						row++;
@@ -98,7 +98,7 @@ public:
 					}
 
 					//	Comment region ended?
-					if (isDelim >= delim + 1)
+					if (isDelim >= delim + 2)
 					{
 						isComment = false;
 						row++;
