@@ -41,7 +41,7 @@ pop outn end
 ### 処理フローの動作確認
 GridPietInterpreterを使うと、テキストファイルの処理フローを直接実行できます。
 Pietソースコードを出力する前に動作確認ができます。
-（もちろん、Pietソースコードを出力した後に、Pietインタプリタで出力してもOKです。）
+（もちろん、Pietソースコードを出力した後に、PietインタプリタでデバッグしてもOKです。）
 
 ```
 ./GridPietInterpreter fact.txt
