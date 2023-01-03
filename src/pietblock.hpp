@@ -382,6 +382,80 @@ public:
 
 		return ss.str();
 	}
+    
+    std::string getList(char delim=',',bool isHeader=true) const
+    {
+        std::stringstream ss;
+        
+        if(isHeader)    // output PietBlock Header or not
+        {
+            //  Block Header
+            ss << "#type:BLOCK" << delim;
+            ss << "name" << delim;
+            ss << "hash" << delim;
+            ss << "address" << delim;
+            ss << "width" << delim;
+            ss << "height" << delim;
+            ss << "pos" << delim;
+            ss << "dir(CC_from_East)" << delim;
+            ss << "UserWidth" << delim;   // user width
+            ss << "UserHeight" << delim;   // user height
+            ss << "SystemWidth" << delim;   // system width
+            ss << "SystemHeight" << delim;   // system height
+            ss << "bufIn" << delim;   // buffer(in)
+            ss << "bufOut" << delim;   // buffer(out)
+            ss << "outT" << delim;
+            ss << "outF" << delim;
+            ss << std::endl;
+        }
+        //  Block contents
+        ss << "BLOCK" << delim;
+        ss << name << delim;
+        ss << hash << delim;
+        ss << static_cast<const void*>(this) << delim;
+        ss << getW() << delim;
+        ss << getH() << delim;
+        ss << pos << delim;
+        ss << dir << delim;
+        ss << w << delim;   // user width
+        ss << h << delim;   // user height
+        ss << ws << delim;   // system width
+        ss << hs << delim;   // system height
+        ss << bufIn << delim;   // buffer(in)
+        ss << bufOut << delim;   // buffer(out)
+        ss << outT << delim;
+        ss << outF << delim;
+        ss << std::endl;
+        
+        return ss.str();
+    }
+        
+    std::string getCommandList(char delim=',',bool isHeader=true) const
+    {
+        std::stringstream ss;
+        
+        if(isHeader)    //  output PietBlock_Command Header or not
+        {
+            //  Commands Header
+            ss << "#type:BLOCK_CMD" << delim;
+            ss << "Block_Name" << delim;
+            ss << "No." << delim;
+            ss << "Command" << delim;
+            ss << std::endl;
+        }
+
+        //  Commands
+        for (size_t i = 0; i < cmds.size(); i++)
+        {
+            ss << "BLOCK_CMD" << delim;
+            ss << name << delim;
+            ss << i << delim;
+            ss << cmds[i] << delim;
+            ss << std::endl;
+        }
+        
+        return ss.str();
+    }
 
 	static const char* getPietBlockHash(int, int, const void* ptr)
 	{

@@ -55,6 +55,30 @@ public:
 
 		return ss.str();
 	}
+    
+    std::string getList(char delim=',',bool isHeader=true) const
+    {
+        std::stringstream ss;
+        if(isHeader)    //  output PietPath Header or not
+        {
+            ss << "#type:PATH" << delim;
+            ss << "address" << delim;
+            ss << "name" << delim;
+            ss << "to" << delim;
+            ss << "pos" << delim;
+            ss << "dir" << delim;
+            ss << std::endl;
+        }
+        ss << "PATH" << delim;
+        ss << static_cast<const void*>(this) << delim;
+        ss << name << delim;
+        ss << to << delim;
+        ss << pos << delim;
+        ss << dir << delim;
+        ss << std::endl;
+        
+        return ss.str();
+    }
 
 	static const char* getPathColor_ascii(int dir, const void*)
 	{

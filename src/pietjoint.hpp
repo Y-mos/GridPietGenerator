@@ -57,6 +57,34 @@ public:
 
 		return ss.str();
 	}
+    std::string getList(char delim=',', bool isHeader=true) const
+    {
+        std::stringstream ss;
+        if(isHeader)    //  output PietJoint Header or not
+        {
+            ss << "#type:JOINT" << delim;
+            ss << "address" << delim;
+            ss << "x" << delim;
+            ss << "y" << delim;
+            ss << "from" << delim;
+            ss << "dirBefore" << delim;
+            ss << "to" << delim;
+            ss << "dirAfter" << delim;
+            ss << std::endl;
+        }
+        ss << "JOINT" << delim;
+        ss << static_cast<const void*>(this) << delim;
+        ss << x << delim;
+        ss << y << delim;
+        ss << from << delim;
+        ss << dirBefore << delim;
+        ss << to << delim;
+        ss << dirAfter << delim;
+        ss << std::endl;
+
+        return ss.str();
+    }
+    
 	template <typename T>
 	void draw(T* data, int W, int H, int C, int _x0, int _y0, T blank, const T* (*getPietColor)(int h, int b, const void*)) const
 	{

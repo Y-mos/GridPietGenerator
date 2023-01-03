@@ -12,6 +12,14 @@
 
 #include "arg.hpp"
 
+
+void outputPietCSV(std::ostream& ost,const PietBoard& pb)
+{
+    ost << pb.getList(',') << std::endl;
+    return;
+}
+
+
 void outputSrcRaw(std::ostream& ost,const std::string& src,const std::string& ifname)
 {
     ost << "=== Contents of Flow Description File (" << ifname << ") ===" << std::endl;
@@ -81,13 +89,16 @@ int main(int argc, char** argv)
     arg.registerKey("outputPietFile","output path for piet source code", true);
     arg.registerKey("outputDesignFile", "output path for piet ascii file", true);
     arg.registerKey("outputDebugFile","output path for debug log",true);
-    
+    arg.registerKey("outputCSV","output path for piet design information in CSV format",true);
+
     arg.addOption("-o", "outputPietFile");
     arg.addOption("--output","outputPietFile");
     arg.addOption("-a", "outputDesignFile");
     arg.addOption("--ascii","outputDesignFile");
     arg.addOption("-d", "outputDebugFile");
     arg.addOption("--debug", "outputDebugFile");
+    arg.addOption("-c","outputCSV");
+    arg.addOption("--csv","outputCSV");
     
 	if(argc < 2)
 	{
@@ -143,6 +154,16 @@ int main(int argc, char** argv)
             outputPietAsciiDescription(ofs, pb, PietUtil::getPietColor_ascii, PietPath::getPathColor_ascii);
         }
 	}
+    
+    if(arg.get("outputCSV")!="")
+    {
+        std::ofstream ofs(arg.get("outputCSV"));
+        if (ofs.is_open())
+        {
+            outputPietCSV(ofs,pb);
+        }
+    }
+    
     
     outputPietPmm(ofname,pb);
 

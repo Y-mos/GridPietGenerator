@@ -437,7 +437,84 @@ public:
 		}
 		return ss.str();
 	}
-
+    
+    std::string getList(const std::vector<std::string>& arr, char delim=',') const
+    {
+        std::stringstream ss;
+        bool isHeader=true;
+        for(auto itr=arr.begin();itr!=arr.end();itr++)
+        {
+            const std::string& objname=*itr;
+            if(objname=="BOARD")
+            {
+                //  PietBoard Header
+                ss << "#type:BOARD" << delim;
+                ss << "address" << delim;
+                ss << "lastID" << delim;
+                ss << std::endl;
+                
+                //  PietBoard
+                ss << "BOARD" << delim;
+                ss << static_cast<const void*>(this) << delim;
+                ss << lastID << delim;
+                ss << std::endl;
+            }
+            else if(objname=="BLOCK")
+            {
+                isHeader=true;
+                for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
+                {
+                    ss << itr->second.getList(delim,isHeader);
+                    isHeader=false;
+                }
+            }
+            else if(objname=="COMMAND")
+            {
+                isHeader=true;
+                for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
+                {
+                    ss << itr->second.getCommandList(delim,isHeader);
+                    isHeader=false;
+                }
+            }
+            else if(objname=="JOINT")
+            {
+                isHeader=true;
+                for (auto itr = joints.begin(); itr != joints.end(); itr++)
+                {
+                    ss << itr->getList(delim,isHeader);
+                    isHeader=false;
+                }
+            }
+            else if(objname=="PATH")
+            {
+                isHeader=true;
+                for (auto itr = paths.begin(); itr != paths.end(); itr++)
+                {
+                    ss << itr->second.getList(delim,isHeader);
+                    isHeader=false;
+                }
+            }
+            else
+            {
+                std::cerr << "!WARNING: Unknown object named as '"+ objname +"'" << std::endl;
+                std::cerr << "          ... Just ignored the object'" + objname + "'" << std::endl;
+            }
+        }
+        
+        return ss.str();
+    }
+    
+    std::string getList(char delim=',') const
+    {
+        std::vector<std::string> objnames;
+        objnames.push_back("BOARD");
+        objnames.push_back("BLOCK");
+        objnames.push_back("COMMAND");
+        objnames.push_back("JOINT");
+        objnames.push_back("PATH");
+        return getList(objnames,delim);
+    }
 
 	template <typename T, int C, T BLANK>
 	void draw(T*& data, int& W, int& H, const T* (*getPietColor)(int h, int b, const void* obj), const T* (*getPathColor)(int dir, const void* obj) = nullptr) const
