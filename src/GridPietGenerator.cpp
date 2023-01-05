@@ -12,6 +12,10 @@
 
 #include "arg.hpp"
 
+void outputPietDot(std::ostream& ost, const PietBoard& pb)
+{
+    ost << pb.getDot() << std::endl;
+}
 
 void outputPietCSV(std::ostream& ost,const PietBoard& pb)
 {
@@ -90,16 +94,19 @@ int main(int argc, char** argv)
     arg.registerKey("outputDesignFile", "output path for piet ascii file", true);
     arg.registerKey("outputDebugFile","output path for debug log",true);
     arg.registerKey("outputCSV","output path for piet design information in CSV format",true);
+    arg.registerKey("outputDot","output path for dot file",true);
 
     arg.addOption("-o", "outputPietFile");
     arg.addOption("--output","outputPietFile");
     arg.addOption("-a", "outputDesignFile");
     arg.addOption("--ascii","outputDesignFile");
-    arg.addOption("-d", "outputDebugFile");
-    arg.addOption("--debug", "outputDebugFile");
+    arg.addOption("-l", "outputDebugFile");
+    arg.addOption("--log", "outputDebugFile");
     arg.addOption("-c","outputCSV");
     arg.addOption("--csv","outputCSV");
-    
+    arg.addOption("-d","outputDot");
+    arg.addOption("--dot","outputDot");
+
 	if(argc < 2)
 	{
 		std::cerr << "Usage : " << argv[0] << " [inputFileName] ..." << std::endl;
@@ -127,9 +134,11 @@ int main(int argc, char** argv)
     outputCommandList(std::cerr,cmds,lines);
     
 	PietBoard pb;
+    int cmdNo=0;
 	for (auto itr = cmds.begin(); itr != cmds.end(); itr++)
 	{
-		pb.appendCommand(*itr);
+		pb.appendCommand(*itr,cmdNo);
+        cmdNo++;
 	}
     
 	pb.put();
@@ -164,6 +173,15 @@ int main(int argc, char** argv)
         }
     }
     
+    if(arg.get("outputDot")!="")
+    {
+        std::ofstream ofs(arg.get("outputDot"));
+        if (ofs.is_open())
+        {
+            outputPietDot(ofs,pb);
+        }
+    }
+
     
     outputPietPmm(ofname,pb);
 

@@ -40,11 +40,11 @@ private:
 		paths.clear();
 
 		lastID = 0;
-		PietBlock pb_err(getAutomaticLabel());
+		PietBlock pb_err(getAutomaticLabel(),":0",-1);
 		blocks[getAutomaticLabel()] = pb_err;
 
 		lastID = 1;
-		PietBlock pb_begin(getAutomaticLabel());
+		PietBlock pb_begin(getAutomaticLabel(),":1",-1);
 		blocks[getAutomaticLabel()] = pb_begin;
 
 		lastLabel = getAutomaticLabel();
@@ -109,7 +109,7 @@ public:
 
 	}
 
-	bool appendCommand(std::string cmd)
+	bool appendCommand(std::string cmd, int cmdNo)
 	{
 		if (blocks.find(lastLabel) == blocks.end())
 		{
@@ -117,7 +117,8 @@ public:
 		}
 		PietBlock& pb = blocks[lastLabel];
 		std::string nextLabel = lastLabel;
-		bool isAdded = pb.appendCommand(cmd, nextLabel, lastID);
+        std::string nextApparentLabel = pb.getApparentName();
+		bool isAdded = pb.appendCommand(cmd, nextLabel, nextApparentLabel, lastID);
 		if (!isAdded)
 		{
 			blocks[":0"].appendErrorCommand(cmd);
@@ -126,7 +127,7 @@ public:
 		{
 			if (nextLabel != lastLabel)
 			{
-				PietBlock npb(nextLabel);
+				PietBlock npb(nextLabel,nextApparentLabel,cmdNo);
 				blocks[nextLabel] = npb;
 				lastLabel = nextLabel;
 			}
@@ -514,6 +515,114 @@ public:
         objnames.push_back("JOINT");
         objnames.push_back("PATH");
         return getList(objnames,delim);
+    }
+    
+    std::string getDot() const
+    {
+        std::stringstream ss;
+        
+        std::map<std::string,std::vector<std::string> > cluster2connections;
+        
+        cluster2connections[":"]=std::vector<std::string>();
+        
+        for(auto itr=blocks.begin();itr!=blocks.end();itr++)
+        {
+            std::string name=itr->second.getName();
+            std::string apparentName=itr->second.getApparentName();
+            std::string outT=itr->second.getOutT();
+            std::string outF=itr->second.getOutF();
+            
+            std::string conn2outT="\""+name+"\"->\""+outT+"\"";
+            std::string conn2outF="\""+name+"\"->\""+outF+"\"";
+            
+            if(outT!="")
+            {
+                if(blocks.at(outT).getName()==blocks.at(outT).getApparentName())
+                {
+                    cluster2connections[":"].push_back(conn2outT);
+                }
+                else
+                {
+                    if(cluster2connections.find(apparentName)==cluster2connections.end())
+                    {
+                        cluster2connections[apparentName]=std::vector<std::string>();
+                    }
+                    cluster2connections[apparentName].push_back(conn2outT);
+                }
+            }
+            
+            if(outF!="")
+            {
+                if(blocks.at(outF).getName()==blocks.at(outF).getApparentName())
+                {
+                    cluster2connections[":"].push_back(conn2outF);
+                }
+                else
+                {
+                    if(cluster2connections.find(apparentName)==cluster2connections.end())
+                    {
+                        cluster2connections[apparentName]=std::vector<std::string>();
+                    }
+                    cluster2connections[apparentName].push_back(conn2outF);
+                }
+            }
+        }
+        
+        /*
+        ss << "digraph piet{" << std::endl;
+        ss << "node [" << std::endl;
+        ss << "shape=box" << std::endl;
+        ss << "];" << std::endl;
+        for(auto itr=cluster2connections.begin();itr!=cluster2connections.end();itr++)
+        {
+            std::string cluster=itr->first;
+            const std::vector<std::string>& arr=itr->second;
+            if(cluster!=":")
+            {
+                ss << "subgraph cluster_"<< cluster.substr(1) << "{" << std::endl;
+                ss << "label=\"" << cluster << "\"" << std::endl;
+            }
+            for(auto itr=arr.begin();itr!=arr.end();itr++)
+            {
+                ss << "  " << *itr << ";" << std::endl;
+            }
+            if(cluster!=":")
+            {
+                ss << "};" << std::endl;
+            }
+        }
+        ss << "}" << std::endl;
+         */
+        ss << "digraph piet{" << std::endl;
+        ss << "node [" << std::endl;
+        ss << "shape=box" << std::endl;
+        ss << "];" << std::endl;
+        for(auto itr=cluster2connections.begin();itr!=cluster2connections.end();itr++)
+        {
+            std::string cluster=itr->first;
+            const std::vector<std::string>& arr=itr->second;
+            if(cluster==":")
+            {
+                continue;
+            }
+            ss << "subgraph cluster_"<< cluster.substr(1) << "{" << std::endl;
+            ss << "label=\"" << cluster << "\"" << std::endl;
+            for(auto itr=arr.begin();itr!=arr.end();itr++)
+            {
+                ss << "  " << *itr << ";" << std::endl;
+            }
+            ss << "};" << std::endl;
+        }
+        {
+            const std::vector<std::string>& arr=cluster2connections[":"];
+            for(auto itr=arr.begin();itr!=arr.end();itr++)
+            {
+                ss << "  " << *itr << ";" << std::endl;
+            }
+        }
+        ss << "}" << std::endl;
+
+        return ss.str();
     }
 
 	template <typename T, int C, T BLANK>

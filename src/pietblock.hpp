@@ -16,6 +16,7 @@ class PietBlock
 {
 private:
 	std::string name;
+    std::string apparentName;
 	int pos;
 	int dir;
 	int w;
@@ -24,6 +25,7 @@ private:
 	int hs;
 	int bufIn;
 	int bufOut;
+    int firstCmdNo;
 
 	char hash;
 
@@ -47,9 +49,10 @@ private:
 		i = (i + 1) % L;
 		return c;
 	}
-	void init(std::string name, int pos, int dir)
+	void init(std::string name, std::string apparentName, int pos, int dir, int firstCmdNo)
 	{
 		this->name = name;
+        this->apparentName = apparentName;
 		this->pos = pos;
 		this->dir = dir;
 		this->w = 0;
@@ -58,6 +61,7 @@ private:
 		this->hs = 3;
 		this->bufIn = 0;
 		this->bufOut = 0;
+        this->firstCmdNo=firstCmdNo;
 		hash = getHash();
 		outT = "";
 		outF = "";
@@ -68,6 +72,7 @@ private:
 	void copyTo(PietBlock& dst) const
 	{
 		dst.name = name;
+        dst.apparentName = apparentName;
 		dst.pos = pos;
 		dst.dir = dir;
 		dst.w = w;
@@ -79,6 +84,7 @@ private:
 		dst.hash = hash;
 		dst.outT = outT;
 		dst.outF = outF;
+        dst.firstCmdNo = firstCmdNo;
 		dst.isEnded = isEnded;
 		dst.flag = flag;
 		dst.cmds.clear();
@@ -87,18 +93,18 @@ private:
 			dst.cmds.push_back(*itr);
 		}
 	}
-	PietBlock(std::string name, int pos, int dir)
+	PietBlock(std::string name, std::string apparentName, int pos, int dir, int firstCmdNo)
 	{
-		init(name, pos, dir);
+		init(name, apparentName, pos, dir, firstCmdNo);
 	}
 public:
 	PietBlock()
 	{
-		init("", 0, 3);
+		init("", "", 0, 3, -1);
 	}
-	PietBlock(std::string name)
+	PietBlock(std::string name, std::string apparentName, int firstCmdNo)
 	{
-		init(name, 0, 3);
+		init(name, apparentName, 0, 3, firstCmdNo);
 	}
 	PietBlock(const PietBlock& obj)
 	{
@@ -111,7 +117,7 @@ public:
 		cmds.clear();
 		return true;
 	}
-	bool appendCommand(std::string cmd, std::string& nextLabel, int& nextLabelIndex)
+	bool appendCommand(std::string cmd, std::string& nextLabel, std::string& nextApparentLabel, int& nextLabelIndex)
 	{
 		bool isAdded = false;
 		int cw = 0;
@@ -127,6 +133,7 @@ public:
 				cws = 3;
 			}
 			nextLabel = cmd;
+            nextApparentLabel = cmd;
 			isEnded = true;
 			isAdded = true;
 		}
@@ -151,6 +158,10 @@ public:
 						nextLabelIndex++;
 						outT = nextLabel;
 					}
+                    else
+                    {
+                        nextApparentLabel = outT;
+                    }
 					setOutT(outT);
 					isEnded = true;
 				}
@@ -162,8 +173,14 @@ public:
 					{
 						nextLabel = ":" + std::to_string(nextLabelIndex);
 						nextLabelIndex++;
-						if (outT == ":") { outT = nextLabel; }
-						if (outF == ":") { outF = nextLabel; }
+						if (outT == ":")
+                        {
+                            outT = nextLabel;
+                        }
+						if (outF == ":")
+                        {
+                            outF = nextLabel;
+                        }
 					}
 					setOutT(outT);
 					setOutF(outF);
@@ -205,6 +222,10 @@ public:
 	{
 		return name;
 	}
+    std::string getApparentName() const
+    {
+        return apparentName;
+    }
 	std::string getOutT() const
 	{
 		return outT;
@@ -371,10 +392,11 @@ public:
 	std::string str(std::string pad = "") const
 	{
 		std::stringstream ss;
-		ss << pad << "*BLOCK " << name << "( hash : " << hash << " )[" << static_cast<const void*>(this) << "] : ";
+		ss << pad << "*BLOCK " << name << "(" << apparentName << ")( hash : " << hash << " )[" << static_cast<const void*>(this) << "] : ";
 		ss << pad << "  [" << getW() << "," << getH() << "] @ (pos,dir)=(" << pos << ", " << dir << ") user[" << w << "," << h << "]/sys[" << ws << "," << hs << "]/buf[" << bufIn << "," << bufOut << "]";
 		if (outT != "") { ss << " outT=" << outT; }
 		if (outF != "") { ss << " outF=" << outF; }
+        ss << " firstCmdNo=" << firstCmdNo;
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
 			ss << std::endl << pad << " " << std::setw(5) << std::setfill(' ') << i << " | " << cmds[i];
@@ -392,6 +414,7 @@ public:
             //  Block Header
             ss << "#type:BLOCK" << delim;
             ss << "name" << delim;
+            ss << "apparentName" << delim;
             ss << "hash" << delim;
             ss << "address" << delim;
             ss << "width" << delim;
@@ -406,11 +429,13 @@ public:
             ss << "bufOut" << delim;   // buffer(out)
             ss << "outT" << delim;
             ss << "outF" << delim;
+            ss << "firstCmdNo" << delim;
             ss << std::endl;
         }
         //  Block contents
         ss << "BLOCK" << delim;
         ss << name << delim;
+        ss << apparentName << delim;
         ss << hash << delim;
         ss << static_cast<const void*>(this) << delim;
         ss << getW() << delim;
@@ -425,6 +450,7 @@ public:
         ss << bufOut << delim;   // buffer(out)
         ss << outT << delim;
         ss << outF << delim;
+        ss << firstCmdNo << delim;
         ss << std::endl;
         
         return ss.str();
@@ -439,6 +465,7 @@ public:
             //  Commands Header
             ss << "#type:BLOCK_CMD" << delim;
             ss << "Block_Name" << delim;
+            ss << "Block_ApparentName" << delim;
             ss << "No." << delim;
             ss << "Command" << delim;
             ss << std::endl;
@@ -449,6 +476,7 @@ public:
         {
             ss << "BLOCK_CMD" << delim;
             ss << name << delim;
+            ss << apparentName << delim;
             ss << i << delim;
             ss << cmds[i] << delim;
             ss << std::endl;
