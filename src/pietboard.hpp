@@ -522,8 +522,10 @@ public:
         std::stringstream ss;
         
         std::map<std::string,std::vector<std::string> > cluster2connections;
+        std::map<int,std::string> firstCmdNo2cluster;
         
         cluster2connections[":"]=std::vector<std::string>();
+        firstCmdNo2cluster[-1]=":";
         
         for(auto itr=blocks.begin();itr!=blocks.end();itr++)
         {
@@ -540,6 +542,7 @@ public:
                 if(blocks.at(outT).getName()==blocks.at(outT).getApparentName())
                 {
                     cluster2connections[":"].push_back(conn2outT);
+                    firstCmdNo2cluster[blocks.at(outT).getFirstCmdNo()]=blocks.at(outT).getApparentName();
                 }
                 else
                 {
@@ -556,6 +559,7 @@ public:
                 if(blocks.at(outF).getName()==blocks.at(outF).getApparentName())
                 {
                     cluster2connections[":"].push_back(conn2outF);
+                    firstCmdNo2cluster[blocks.at(outF).getFirstCmdNo()]=blocks.at(outF).getApparentName();
                 }
                 else
                 {
@@ -568,51 +572,38 @@ public:
             }
         }
         
-        /*
         ss << "digraph piet{" << std::endl;
         ss << "node [" << std::endl;
         ss << "shape=box" << std::endl;
         ss << "];" << std::endl;
-        for(auto itr=cluster2connections.begin();itr!=cluster2connections.end();itr++)
+        //for(auto itr=cluster2connections.begin();itr!=cluster2connections.end();itr++)
+        //{
+        for(auto itr=firstCmdNo2cluster.begin();itr!=firstCmdNo2cluster.end();itr++)
         {
-            std::string cluster=itr->first;
-            const std::vector<std::string>& arr=itr->second;
-            if(cluster!=":")
-            {
-                ss << "subgraph cluster_"<< cluster.substr(1) << "{" << std::endl;
-                ss << "label=\"" << cluster << "\"" << std::endl;
-            }
-            for(auto itr=arr.begin();itr!=arr.end();itr++)
-            {
-                ss << "  " << *itr << ";" << std::endl;
-            }
-            if(cluster!=":")
-            {
-                ss << "};" << std::endl;
-            }
-        }
-        ss << "}" << std::endl;
-         */
-        ss << "digraph piet{" << std::endl;
-        ss << "node [" << std::endl;
-        ss << "shape=box" << std::endl;
-        ss << "];" << std::endl;
-        for(auto itr=cluster2connections.begin();itr!=cluster2connections.end();itr++)
-        {
-            std::string cluster=itr->first;
-            const std::vector<std::string>& arr=itr->second;
+            std::string cluster=itr->second;
+            //const std::vector<std::string>& arr=itr->second;
+            const std::vector<std::string>& arr=cluster2connections[cluster];
             if(cluster==":")
             {
                 continue;
             }
             ss << "subgraph cluster_"<< cluster.substr(1) << "{" << std::endl;
             ss << "label=\"" << cluster << "\"" << std::endl;
+            ss << "node [" << std::endl;
+            ss << "fontcolor=\"#7f7f7f\",color=\"#7f7f7f\",style=\"dashed\"" << std::endl;
+            ss << "];" << std::endl;
+            /*
+            ss << "edge [" << std::endl;
+            ss << "color=\"#7f7f7f\",style=\"dashed\"" << std::endl;
+            ss << "];" << std::endl;
+             */
             for(auto itr=arr.begin();itr!=arr.end();itr++)
             {
                 ss << "  " << *itr << ";" << std::endl;
             }
             ss << "};" << std::endl;
         }
+        //}
         {
             const std::vector<std::string>& arr=cluster2connections[":"];
             for(auto itr=arr.begin();itr!=arr.end();itr++)

@@ -234,6 +234,10 @@ public:
 	{
 		return outF;
 	}
+    int getFirstCmdNo() const
+    {
+        return firstCmdNo;
+    }
 	bool setOutT(std::string outT)
 	{
 		this->outT = outT;
