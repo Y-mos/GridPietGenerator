@@ -539,7 +539,7 @@ public:
             
             if(outT!="")
             {
-                if(blocks.at(outT).getName()==blocks.at(outT).getApparentName())
+                if(blocks.at(outT).getName()==blocks.at(outT).getApparentName() && apparentName!=blocks.at(outT).getApparentName())
                 {
                     cluster2connections[":"].push_back(conn2outT);
                     firstCmdNo2cluster[blocks.at(outT).getFirstCmdNo()]=blocks.at(outT).getApparentName();
@@ -556,7 +556,7 @@ public:
             
             if(outF!="")
             {
-                if(blocks.at(outF).getName()==blocks.at(outF).getApparentName())
+                if(blocks.at(outF).getName()==blocks.at(outF).getApparentName() && apparentName!=blocks.at(outF).getApparentName())
                 {
                     cluster2connections[":"].push_back(conn2outF);
                     firstCmdNo2cluster[blocks.at(outF).getFirstCmdNo()]=blocks.at(outF).getApparentName();
@@ -592,11 +592,11 @@ public:
             ss << "node [" << std::endl;
             ss << "fontcolor=\"#7f7f7f\",color=\"#7f7f7f\",style=\"dashed\"" << std::endl;
             ss << "];" << std::endl;
-            /*
+            /**/
             ss << "edge [" << std::endl;
             ss << "color=\"#7f7f7f\",style=\"dashed\"" << std::endl;
             ss << "];" << std::endl;
-             */
+             /**/
             for(auto itr=arr.begin();itr!=arr.end();itr++)
             {
                 ss << "  " << *itr << ";" << std::endl;
