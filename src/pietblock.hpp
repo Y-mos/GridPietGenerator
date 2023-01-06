@@ -417,10 +417,10 @@ public:
         {
             //  Block Header
             ss << "#type:BLOCK" << delim;
+            ss << "address" << delim;
             ss << "name" << delim;
             ss << "apparentName" << delim;
             ss << "hash" << delim;
-            ss << "address" << delim;
             ss << "width" << delim;
             ss << "height" << delim;
             ss << "pos" << delim;
@@ -438,10 +438,10 @@ public:
         }
         //  Block contents
         ss << "BLOCK" << delim;
+        ss << static_cast<const void*>(this) << delim;
         ss << name << delim;
         ss << apparentName << delim;
         ss << hash << delim;
-        ss << static_cast<const void*>(this) << delim;
         ss << getW() << delim;
         ss << getH() << delim;
         ss << pos << delim;
