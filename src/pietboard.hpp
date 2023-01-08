@@ -460,21 +460,24 @@ public:
                 ss << lastID << delim;
                 ss << std::endl;
             }
-            else if(objname=="BLOCK")
+            else if(objname=="BLOCK" || objname=="COMMAND")
             {
                 isHeader=true;
+                std::map<int,std::string> firstCmdNo2name;
                 for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
                 {
-                    ss << itr->second.getList(delim,isHeader);
-                    isHeader=false;
+                    firstCmdNo2name[itr->second.getFirstCmdNo()]=itr->first;
                 }
-            }
-            else if(objname=="COMMAND")
-            {
-                isHeader=true;
-                for (auto itr = blocks.begin(); itr != blocks.end(); itr++)
+                for (auto itr = firstCmdNo2name.begin(); itr != firstCmdNo2name.end(); itr++)
                 {
-                    ss << itr->second.getCommandList(delim,isHeader);
+                    if(objname=="BLOCK")
+                    {
+                        ss << blocks.at(itr->second).getList(delim,isHeader);
+                    }
+                    else if(objname=="COMMAND")
+                    {
+                        ss << blocks.at(itr->second).getCommandList(delim,isHeader);
+                    }
                     isHeader=false;
                 }
             }
