@@ -420,6 +420,7 @@ public:
             ss << "address" << delim;
             ss << "name" << delim;
             ss << "apparentName" << delim;
+            ss << "flags" << delim; //  will be used to dot dipiction
             ss << "hash" << delim;
             ss << "width" << delim;
             ss << "height" << delim;
@@ -436,11 +437,31 @@ public:
             ss << "firstCmdNo" << delim;
             ss << std::endl;
         }
+        
+        std::string F="";
+        auto itr=std::find(cmds.begin(),cmds.end(),"end");
+        if(itr!=cmds.end())
+        {
+            F+="E";
+        }
+        if(name==":1")
+        {
+            F+="B";
+        }
+        
+        //  initialize if no flag was assigned
+        if(F=="")
+        {
+            F="-";
+        }
+        
+        
         //  Block contents
         ss << "BLOCK" << delim;
         ss << static_cast<const void*>(this) << delim;
         ss << name << delim;
         ss << apparentName << delim;
+        ss << F << delim;
         ss << hash << delim;
         ss << getW() << delim;
         ss << getH() << delim;
@@ -452,8 +473,8 @@ public:
         ss << hs << delim;   // system height
         ss << bufIn << delim;   // buffer(in)
         ss << bufOut << delim;   // buffer(out)
-        ss << outT << delim;
-        ss << outF << delim;
+        ss << (outT==""?"-":outT) << delim;
+        ss << (outF==""?"-":outF) << delim;
         ss << firstCmdNo << delim;
         ss << std::endl;
         
