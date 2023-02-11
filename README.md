@@ -39,7 +39,8 @@ pop outn end
 ```
 
 ### 処理フローの動作確認
-GridPietInterpreterを使うと、テキストファイルの処理フローを直接実行できます。
+GridPietInterpreterを使うと、テキストファイルの処理フローを直接実行します。
+
 Pietソースコードを出力する前に動作確認ができます。
 （もちろん、Pietソースコードを出力した後に、PietインタプリタでデバッグしてもOKです。）
 
@@ -112,15 +113,43 @@ output:
 ```
 
 ### Pietソースコードの出力
-GridPietGeneratorを使うと、テキストファイルからPietソースコード画像を生成できます。
+GridPietGeneratorを使うと、テキストファイルからPietソースコード画像(バイナリppm形式)を生成できます。
+
+- 入力ファイル名をオプションなしで指定
+- 出力ファイル名を`-o`オプションで指定
+
 ```
 ./GridPietGenerator fact.txt -o pietSource.ppm
 ```
 
-このコマンドを実行するとPietソースコード画像"pietSource.ppm"が出力されます。
-出力画像のフォーマットはバイナリppm形式です。
 > 出力画像の例
 > ![Output Image](samples/outputImages/fact.png)
+
+
+詳細な情報を出力するオプションもあります。
+
+```
+Usage : ./GridPietGenerator [inputFileName] ...
+[Usage]:
+ --csv -c [arg]
+   output path for piet design information in CSV format
+ --log -l [arg]
+   output path for debug log
+ --ascii -a [arg]
+   output path for piet ascii file
+ --output -o [arg]
+   output path for piet source code
+```
+
+- `-a`,`--ascii` : Pietソースコード画像の配置を表すファイルを出力
+  - テキストファイル
+  - [PietEmbedder](https://github.com/Y-mos/PietEmbedder)の入力に使うと、任意の画像にPietソースコード(上記ppmファイル)を埋め込めます。
+- `-c`, `--csv` : 詳細調査用csvファイルを出力（デバッグ用）
+- `-l`,`--log` : コンソール出力をファイルに出力（デバッグ用）
+
+```
+./GridPietGenerator fact.txt -o pietSource.ppm -a ascii.txt -c debug.csv -l console.log
+```
 
 ## 特徴
 + 出力画像はほぼ正方形になるようにしています。

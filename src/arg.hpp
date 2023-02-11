@@ -75,6 +75,7 @@ public:
         key2value[key]="";
         key2desc[key]=desc;
         key2hasOperand[key]=hasOperand;
+        return 1;
     }
     int addOption(const std::string option, const std::string key)
     {
